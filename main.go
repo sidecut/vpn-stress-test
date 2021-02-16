@@ -96,11 +96,11 @@ func handleGetUnitsBlocks(c echo.Context) error {
 		c.JSON(http.StatusBadRequest, err)
 	}
 	units := c.Param("units")
-	getUnitsBlocks(units, blocks, c)
-	return nil
+	return getUnitsBlocks(units, blocks, c)
+
 }
 
-func getUnitsBlocks(units string, blocks int, c echo.Context) {
+func getUnitsBlocks(units string, blocks int, c echo.Context) error {
 	var handler echo.HandlerFunc
 
 	switch units {
@@ -112,16 +112,18 @@ func getUnitsBlocks(units string, blocks int, c echo.Context) {
 		handler = get1MbBlock
 	case "MB":
 		handler = get1MBBlock
+	default:
+		return echo.ErrBadRequest
 	}
 	for i := 0; i < blocks; i++ {
 		handler(c)
 	}
+	return nil
 }
 
 func handleGetBlocks(c echo.Context) error {
 	units := c.Param("units")
-	getUnitsBlocks(units, 1, c)
-	return nil
+	return getUnitsBlocks(units, 1, c)
 }
 
 func main() {
