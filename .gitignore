@@ -1,0 +1,6 @@
+# executable
+vpn-stress-test
+vpn-stress-test.exe
+
+# output from running w/ nohup on linux/macOs
+nohup.out
