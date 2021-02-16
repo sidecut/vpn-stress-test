@@ -10,24 +10,27 @@ import (
 
 var charset = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
 
-// Send a block of 1024 bits
+var buffer = make([]byte, 1024/8)
+
+// Send a block of 1024 bits, i.e. 128 bytes
 func get1kbBlock(c echo.Context) error {
 	for i := 0; i < 1024/8; i++ {
 		index := rand.Intn(64)
-		c.Response().Write(charset[index : index+1])
+		buffer[i] = charset[index]
 	}
+	c.Response().Write(buffer)
 	return nil
 }
 
-// Send a block of 1024 characters
+// Send a block of 1024 bytes
 func get1kBBlock(c echo.Context) error {
-	for i := 0; i < 1024; i++ {
-		index := rand.Intn(64)
-		c.Response().Write(charset[index : index+1])
+	for i := 0; i < 8; i++ {
+		get1kbBlock(c)
 	}
 	return nil
 }
 
+// Send a block of 1048576 bits, i.e. 131072 bytes
 func get1MbBlocks(c echo.Context) error {
 	blocks, err := strconv.Atoi(c.Param("blocks"))
 	if err != nil {
@@ -41,6 +44,7 @@ func get1MbBlocks(c echo.Context) error {
 	return nil
 }
 
+// Send a block of 1048576 bytes
 func get1MBBlocks(c echo.Context) error {
 	blocks, err := strconv.Atoi(c.Param("blocks"))
 	if err != nil {
