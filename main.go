@@ -31,7 +31,7 @@ func get1kBBlock(c echo.Context) error {
 }
 
 // Send a block of 1048576 bits, i.e. 131072 bytes
-func get1MbBlocks(c echo.Context) error {
+func handleGet1MbBlocks(c echo.Context) error {
 	blocks, err := strconv.Atoi(c.Param("blocks"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
@@ -45,7 +45,7 @@ func get1MbBlocks(c echo.Context) error {
 }
 
 // Send a block of 1048576 bytes
-func get1MBBlocks(c echo.Context) error {
+func handleGet1MBBlocks(c echo.Context) error {
 	blocks, err := strconv.Atoi(c.Param("blocks"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
@@ -58,7 +58,7 @@ func get1MBBlocks(c echo.Context) error {
 	return nil
 }
 
-func get1kbBlocks(c echo.Context) error {
+func handleGet1kbBlocks(c echo.Context) error {
 	blocks, err := strconv.Atoi(c.Param("blocks"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
@@ -69,7 +69,7 @@ func get1kbBlocks(c echo.Context) error {
 	return nil
 }
 
-func get1kBBlocks(c echo.Context) error {
+func handleGet1kBBlocks(c echo.Context) error {
 	blocks, err := strconv.Atoi(c.Param("blocks"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
@@ -85,9 +85,9 @@ func main() {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
-	e.GET("/api/get1MBBlocks/:blocks", get1MBBlocks)
-	e.GET("/api/get1kBBlocks/:blocks", get1kBBlocks)
-	e.GET("/api/get1MbBlocks/:blocks", get1MbBlocks)
-	e.GET("/api/get1kbBlocks/:blocks", get1kbBlocks)
+	e.GET("/api/get1MBBlocks/:blocks", handleGet1MBBlocks)
+	e.GET("/api/get1kBBlocks/:blocks", handleGet1kBBlocks)
+	e.GET("/api/get1MbBlocks/:blocks", handleGet1MbBlocks)
+	e.GET("/api/get1kbBlocks/:blocks", handleGet1kbBlocks)
 	e.Logger.Fatal(e.Start(":1323"))
 }
