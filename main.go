@@ -1,11 +1,11 @@
 package main
 
 import (
+	"log"
 	"math/rand"
-	"net/http"
 	"strconv"
 
-	"github.com/labstack/echo/v4"
+	"github.com/gofiber/fiber/v2"
 )
 
 var charset = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
@@ -13,95 +13,114 @@ var charset = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz012345
 var buffer = make([]byte, 1024/8)
 
 // Send a block of 1024 bits, i.e. 128 bytes
-func get1kbBlock(c echo.Context) error {
+func get1kbBlock(c *fiber.Ctx) error {
 	for i := 0; i < 1024/8; i++ {
 		index := rand.Intn(64)
 		buffer[i] = charset[index]
 	}
-	c.Response().Write(buffer)
-	return nil
+	return c.Send(buffer)
 }
 
 // Send a block of 1024 bytes
-func get1kBBlock(c echo.Context) error {
+func get1kBBlock(c *fiber.Ctx) error {
 	for i := 0; i < 8; i++ {
-		get1kbBlock(c)
+		err := get1kbBlock(c)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
 // Send a block of 1048576 bits, i.e. 131072 bytes
-func handleGet1MbBlocks(c echo.Context) error {
-	blocks, err := strconv.Atoi(c.Param("blocks"))
+func handleGet1MbBlocks(c *fiber.Ctx) error {
+	blocks, err := strconv.Atoi(c.Params("blocks"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		return err
 	}
 	for i := 0; i < blocks; i++ {
-		get1MbBlock(c)
+		err := get1MbBlock(c)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
-func get1MbBlock(c echo.Context) error {
+func get1MbBlock(c *fiber.Ctx) error {
 	for j := 0; j < 1024/8; j++ {
-		get1kBBlock(c)
+		err := get1kBBlock(c)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
 // Send a block of 1048576 bytes
-func handleGet1MBBlocks(c echo.Context) error {
-	blocks, err := strconv.Atoi(c.Param("blocks"))
+func handleGet1MBBlocks(c *fiber.Ctx) error {
+	blocks, err := strconv.Atoi(c.Params("blocks"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		return err
 	}
 	for i := 0; i < blocks; i++ {
-		get1MBBlock(c)
+		err := get1MBBlock(c)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
-func get1MBBlock(c echo.Context) error {
+func get1MBBlock(c *fiber.Ctx) error {
 	for j := 0; j < 1024; j++ {
-		get1kBBlock(c)
+		err := get1kBBlock(c)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
-func handleGet1kbBlocks(c echo.Context) error {
-	blocks, err := strconv.Atoi(c.Param("blocks"))
+func handleGet1kbBlocks(c *fiber.Ctx) error {
+	blocks, err := strconv.Atoi(c.Params("blocks"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		return err
 	}
 	for i := 0; i < blocks; i++ {
-		get1kbBlock(c)
+		err := get1kbBlock(c)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
-func handleGet1kBBlocks(c echo.Context) error {
-	blocks, err := strconv.Atoi(c.Param("blocks"))
+func handleGet1kBBlocks(c *fiber.Ctx) error {
+	blocks, err := strconv.Atoi(c.Params("blocks"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		return err
 	}
 	for i := 0; i < blocks; i++ {
-		get1kBBlock(c)
+		err := get1kBBlock(c)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
-func handleGetUnitsBlocks(c echo.Context) error {
-	blocks, err := strconv.Atoi(c.Param("number"))
+func handleGetUnitsBlocks(c *fiber.Ctx) error {
+	blocks, err := strconv.Atoi(c.Params("number"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		return err
 	}
-	units := c.Param("units")
+	units := c.Params("units")
 	return getUnitsBlocks(units, blocks, c)
-
 }
 
-func getUnitsBlocks(units string, blocks int, c echo.Context) error {
-	var handler echo.HandlerFunc
+func getUnitsBlocks(units string, blocks int, c *fiber.Ctx) error {
+	var handler fiber.Handler
 
 	switch units {
 	case "kb":
@@ -113,7 +132,7 @@ func getUnitsBlocks(units string, blocks int, c echo.Context) error {
 	case "MB":
 		handler = get1MBBlock
 	default:
-		return echo.ErrBadRequest
+		return fiber.ErrBadRequest
 	}
 	for i := 0; i < blocks; i++ {
 		handler(c)
@@ -121,21 +140,21 @@ func getUnitsBlocks(units string, blocks int, c echo.Context) error {
 	return nil
 }
 
-func handleGetBlocks(c echo.Context) error {
-	units := c.Param("units")
+func handleGetBlocks(c *fiber.Ctx) error {
+	units := c.Params("units")
 	return getUnitsBlocks(units, 1, c)
 }
 
 func main() {
-	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
+	app := fiber.New()
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.Status(fiber.StatusOK).SendString("Hello, World!")
 	})
-	e.GET("/api/get1MBBlocks/:blocks", handleGet1MBBlocks)
-	e.GET("/api/get1kBBlocks/:blocks", handleGet1kBBlocks)
-	e.GET("/api/get1MbBlocks/:blocks", handleGet1MbBlocks)
-	e.GET("/api/get1kbBlocks/:blocks", handleGet1kbBlocks)
-	e.GET("/api/getBlocks/:units", handleGetBlocks)
-	e.GET("/api/getBlocks/:units/:number", handleGetUnitsBlocks)
-	e.Logger.Fatal(e.Start(":1323"))
+	app.Get("/api/get1MBBlocks/:blocks", handleGet1MBBlocks)
+	app.Get("/api/get1kBBlocks/:blocks", handleGet1kBBlocks)
+	app.Get("/api/get1MbBlocks/:blocks", handleGet1MbBlocks)
+	app.Get("/api/get1kbBlocks/:blocks", handleGet1kbBlocks)
+	app.Get("/api/getBlocks/:units", handleGetBlocks)
+	app.Get("/api/getBlocks/:units/:number", handleGetUnitsBlocks)
+	log.Fatal(app.Listen(":1323"))
 }
