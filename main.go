@@ -23,104 +23,104 @@ func get1kbBlock(c *fiber.Ctx) error {
 }
 
 // Send a block of 1024 bytes
-func get1kBBlock(c *fiber.Ctx) error {
+func get1kBBlock(c *fiber.Ctx) (err error) {
 	for i := 0; i < 8; i++ {
-		err := get1kbBlock(c)
+		err = get1kbBlock(c)
 		if err != nil {
-			return err
+			return
 		}
 	}
-	return nil
+	return
 }
 
 // Send a block of 1048576 bits, i.e. 131072 bytes
-func handleGet1MbBlocks(c *fiber.Ctx) error {
+func handleGet1MbBlocks(c *fiber.Ctx) (err error) {
 	blocks, err := strconv.Atoi(c.Params("blocks"))
 	if err != nil {
-		return err
+		return
 	}
 	for i := 0; i < blocks; i++ {
-		err := get1MbBlock(c)
+		err = get1MbBlock(c)
 		if err != nil {
-			return err
+			return
 		}
 	}
-	return nil
+	return
 }
 
-func get1MbBlock(c *fiber.Ctx) error {
+func get1MbBlock(c *fiber.Ctx) (err error) {
 	for j := 0; j < 1024/8; j++ {
-		err := get1kBBlock(c)
+		err = get1kBBlock(c)
 		if err != nil {
-			return err
+			return
 		}
 	}
-	return nil
+	return
 }
 
 // Send a block of 1048576 bytes
-func handleGet1MBBlocks(c *fiber.Ctx) error {
+func handleGet1MBBlocks(c *fiber.Ctx) (err error) {
 	blocks, err := strconv.Atoi(c.Params("blocks"))
 	if err != nil {
-		return err
+		return
 	}
 	for i := 0; i < blocks; i++ {
-		err := get1MBBlock(c)
+		err = get1MBBlock(c)
 		if err != nil {
-			return err
+			return
 		}
 	}
-	return nil
+	return
 }
 
-func get1MBBlock(c *fiber.Ctx) error {
+func get1MBBlock(c *fiber.Ctx) (err error) {
 	for j := 0; j < 1024; j++ {
-		err := get1kBBlock(c)
+		err = get1kBBlock(c)
 		if err != nil {
-			return err
+			return
 		}
 	}
-	return nil
+	return
 }
 
-func handleGet1kbBlocks(c *fiber.Ctx) error {
+func handleGet1kbBlocks(c *fiber.Ctx) (err error) {
 	blocks, err := strconv.Atoi(c.Params("blocks"))
 	if err != nil {
-		return err
+		return
 	}
 	for i := 0; i < blocks; i++ {
-		err := get1kbBlock(c)
+		err = get1kbBlock(c)
 		if err != nil {
-			return err
+			return
 		}
 	}
-	return nil
+	return
 }
 
-func handleGet1kBBlocks(c *fiber.Ctx) error {
+func handleGet1kBBlocks(c *fiber.Ctx) (err error) {
 	blocks, err := strconv.Atoi(c.Params("blocks"))
 	if err != nil {
-		return err
+		return
 	}
 	for i := 0; i < blocks; i++ {
-		err := get1kBBlock(c)
+		err = get1kBBlock(c)
 		if err != nil {
-			return err
+			return
 		}
 	}
-	return nil
+	return
 }
 
-func handleGetUnitsBlocks(c *fiber.Ctx) error {
+func handleGetUnitsBlocks(c *fiber.Ctx) (err error) {
 	blocks, err := strconv.Atoi(c.Params("number"))
 	if err != nil {
-		return err
+		return
 	}
 	units := c.Params("units")
 	return getUnitsBlocks(units, blocks, c)
 }
 
-func getUnitsBlocks(units string, blocks int, c *fiber.Ctx) error {
+func getUnitsBlocks(units string, blocks int, c *fiber.Ctx) (err error) {
 	var handler fiber.Handler
 
 	switch units {
@@ -136,9 +136,12 @@ func getUnitsBlocks(units string, blocks int, c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 	for i := 0; i < blocks; i++ {
-		handler(c)
+		err = handler(c)
+		if err != nil {
+			return
+		}
 	}
-	return nil
+	return
 }
 
 func handleGetBlocks(c *fiber.Ctx) error {
