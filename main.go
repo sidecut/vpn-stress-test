@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 var charset = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
@@ -147,6 +148,7 @@ func handleGetBlocks(c *fiber.Ctx) error {
 
 func main() {
 	app := fiber.New()
+	app.Use(logger.New())
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).SendString("Hello, World!")
 	})
