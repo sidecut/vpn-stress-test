@@ -11,10 +11,9 @@ import (
 
 var charset = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
 
-var buffer = make([]byte, 1024/8)
-
 // Send a block of 1024 bits, i.e. 128 bytes
 func get1kbBlock(c *fiber.Ctx) (err error) {
+	var buffer = make([]byte, 1024/8)
 	for i := 0; i < 1024/8; i++ {
 		index := rand.Intn(64)
 		buffer[i] = charset[index]
