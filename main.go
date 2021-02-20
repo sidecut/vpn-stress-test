@@ -14,12 +14,13 @@ var charset = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz012345
 var buffer = make([]byte, 1024/8)
 
 // Send a block of 1024 bits, i.e. 128 bytes
-func get1kbBlock(c *fiber.Ctx) error {
+func get1kbBlock(c *fiber.Ctx) (err error) {
 	for i := 0; i < 1024/8; i++ {
 		index := rand.Intn(64)
 		buffer[i] = charset[index]
 	}
-	return c.Send(buffer)
+	_, err = c.Write(buffer)
+	return
 }
 
 // Send a block of 1024 bytes
