@@ -1,7 +1,7 @@
 package main
 
 import (
-	"math/rand"
+	"math/rand/v2"
 	"net/http"
 	"strconv"
 
@@ -16,7 +16,7 @@ var buffer = make([]byte, 1024/8)
 // Send a block of 1024 bits, i.e. 128 bytes
 func get1kbBlock(c echo.Context) error {
 	for i := 0; i < 1024/8; i++ {
-		index := rand.Intn(64)
+		index := rand.IntN(64)
 		buffer[i] = charset[index]
 	}
 	c.Response().Write(buffer)
